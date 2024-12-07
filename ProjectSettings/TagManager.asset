@@ -6,6 +6,8 @@ TagManager:
   tags:
   - ColisionSegura
   - ColisionPeligrosa
+  - Combustible
+  - Recurso
   layers:
   - Default
   - TransparentFX
