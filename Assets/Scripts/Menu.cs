@@ -5,18 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-    // Start is called before the first frame update
-
-    public void EmpezarNivel(string nombreNivel)
+    // Esta función carga la escena de Historia en vez del nivel directamente
+    public void EmpezarHistoria(string nombreHistoria)
     {
-        SceneManager.LoadScene(nombreNivel);
+        SceneManager.LoadScene(nombreHistoria);
     }
+
     public void Salir()
     {
         Application.Quit();
         Debug.Log("Aquí se cierra la aplicación");
     }
-
-
-
 }
+
