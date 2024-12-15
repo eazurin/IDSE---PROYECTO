@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // Asegúrate de tener esto
+using TMPro;
 
 public class HistoriaController : MonoBehaviour
 {
     public string nombreMenuPrincipal = "MenuPrincipal";
     public string nombrePrimerNivel = "Nivel1";
+    public string nombreNivelHistoria1 = "Historia1";
+    public string nombreNivel4 = "Nivel4";
 
     // Referencia a tus objetos TextMeshProUGUI
-    // Arrastra Historia_1, Historia_2, Historia_3 desde el inspector.
     public TextMeshProUGUI[] textosHistoria;
 
     private int indiceActual = 0;
@@ -22,13 +23,22 @@ public class HistoriaController : MonoBehaviour
     {
         if (indiceActual < textosHistoria.Length - 1)
         {
+            // Avanzar al siguiente texto si no estamos en el último
             indiceActual++;
             MostrarTexto();
         }
         else
         {
-            // Si estamos en el último texto, al presionar Siguiente pasamos al Nivel1
-            SceneManager.LoadScene(nombrePrimerNivel);
+            // Si estamos en el último texto y en la escena "Historia1"
+            if (SceneManager.GetActiveScene().name == nombreNivelHistoria1)
+            {
+                SceneManager.LoadScene(nombreNivel4);
+            }
+            else
+            {
+                // Comportamiento original: ir al Nivel1
+                SceneManager.LoadScene(nombrePrimerNivel);
+            }
         }
     }
 
@@ -36,25 +46,26 @@ public class HistoriaController : MonoBehaviour
     {
         if (indiceActual > 0)
         {
+            // Retrocede al texto anterior
             indiceActual--;
             MostrarTexto();
         }
         else
         {
-            // Si estamos en el primer texto y le damos a Anterior, volvemos al Menú Principal
+            // Si estamos en el primer texto, regresa al menú principal
             SceneManager.LoadScene(nombreMenuPrincipal);
         }
     }
 
     void MostrarTexto()
     {
-        // Oculta todos los textos
+        // Oculta todos los textos primero
         for (int i = 0; i < textosHistoria.Length; i++)
         {
             textosHistoria[i].gameObject.SetActive(false);
         }
 
-        // Muestra el texto correspondiente al índice actual
+        // Asegúrate de mostrar solo el texto actual
         if (indiceActual >= 0 && indiceActual < textosHistoria.Length)
         {
             textosHistoria[indiceActual].gameObject.SetActive(true);

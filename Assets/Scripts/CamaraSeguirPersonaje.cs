@@ -5,21 +5,13 @@ public class CamaraSeguirPersonaje : MonoBehaviour
 {
     public Transform personaje;
     public float velocidadSeguir = 5f;
-    public float limiteXMin = -5f, limiteXMax = 5f;
+    public float limiteXMin = -15f, limiteXMax = 15f;
     public float limiteYMin = 0f, limiteYMax = 5f;
-
-    private Camera camara;
-
-    void Start()
-    {
-        camara = Camera.main;
-    }
 
     void Update()
     {
-        int nivelActual = SceneManager.GetActiveScene().buildIndex;
-
-        if (nivelActual == 2)
+        // Verifica si el nivel actual es "Nivel2"
+        if (SceneManager.GetActiveScene().name == "Nivel3" || SceneManager.GetActiveScene().name == "Nivel4")
         {
             SeguirPersonaje();
         }
@@ -27,6 +19,7 @@ public class CamaraSeguirPersonaje : MonoBehaviour
 
     private void SeguirPersonaje()
     {
+        // Calcula la posición de la cámara basada en los límites y el personaje
         Vector3 posicionObjetivo = personaje.position;
 
         float xPos = Mathf.Clamp(posicionObjetivo.x, limiteXMin, limiteXMax);

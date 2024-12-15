@@ -7,60 +7,129 @@ public class ObstacleMovement2D : MonoBehaviour
     public enum MovementDirection
     {
         Horizontal,
-        Vertical
+        Vertical,
+        DiagonalDownLeft,
+        DiagonalDownRight
     }
 
     [Header("Movimiento")]
     public MovementDirection direction = MovementDirection.Horizontal; // Dirección del movimiento
     public float speed = 3f; // Velocidad del movimiento
-    public float range = 5f; // Rango de movimiento
+    public float range = 5f; // Rango de movimiento (Horizontal/Vertical)
 
-    [Header("Pausa")]
-    public float pauseDuration = 1f; // Tiempo de pausa al llegar a un extremo
+    [Header("Configuración para Diagonales")]
+    public bool isDiagonal = false; // Identifica si el objeto es un asteroide diagonal
+    public float extraFallDistance = 2f; // Distancia extra para atravesar la superficie (solo para diagonales)
+    public float respawnTime = 3f; // Tiempo para reaparecer después de caer (solo para diagonales)
 
-    private Vector2 startPosition;
-    private bool isPaused = false;
-    private float targetPosition; // Posición objetivo actual
-    private int directionMultiplier = 1; // 1 para adelante, -1 para atrás
+    private Vector2 startPosition; // Posición inicial
+    private Vector2 targetPosition; // Posición objetivo (para diagonales)
+    private bool isFalling = false; // Controla si el objeto está en movimiento (diagonales)
+    private bool isPaused = false; // Controla si el objeto está en pausa (Horizontal/Vertical)
+    private float targetPositionValue; // Posición objetivo para horizontal/vertical
+    private int directionMultiplier = 1; // Control de dirección (1: adelante, -1: atrás)
 
     void Start()
     {
-        startPosition = transform.position; // Guarda la posición inicial
-        SetTargetPosition(); // Establece la posición objetivo inicial según la dirección
+        startPosition = transform.position;
+
+        if (isDiagonal)
+        {
+            // Configuración inicial para diagonales
+            SetDiagonalTargetPosition();
+        }
+        else
+        {
+            // Configuración inicial para horizontal/vertical
+            SetLinearTargetPosition();
+        }
     }
 
     void Update()
     {
-        if (isPaused)
-            return; // Si está en pausa, no actualizar el movimiento
+        if (isDiagonal)
+        {
+            if (!isFalling)
+            {
+                MoveDiagonal();
+            }
+        }
+        else
+        {
+            if (!isPaused)
+            {
+                MoveLinear();
+            }
+        }
+    }
 
-        // Determinar la posición actual y la posición objetivo según la dirección
-        float current = (direction == MovementDirection.Horizontal) ? transform.position.x : transform.position.y;
+    // Movimiento para objetos diagonales (asteroides)
+    void MoveDiagonal()
+    {
+        Vector2 movement = Vector2.zero;
+
+        if (direction == MovementDirection.DiagonalDownLeft)
+        {
+            movement = new Vector2(-speed * Time.deltaTime, -speed * Time.deltaTime);
+        }
+        else if (direction == MovementDirection.DiagonalDownRight)
+        {
+            movement = new Vector2(speed * Time.deltaTime, -speed * Time.deltaTime);
+        }
+
+        transform.position += (Vector3)movement;
+
+        if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
+        {
+            StartCoroutine(RespawnDiagonal());
+        }
+    }
+
+    // Configuración de la posición objetivo para diagonales
+    void SetDiagonalTargetPosition()
+    {
+        if (direction == MovementDirection.DiagonalDownLeft)
+        {
+            targetPosition = new Vector2(startPosition.x - range, startPosition.y - range - extraFallDistance);
+        }
+        else if (direction == MovementDirection.DiagonalDownRight)
+        {
+            targetPosition = new Vector2(startPosition.x + range, startPosition.y - range - extraFallDistance);
+        }
+    }
+
+    IEnumerator RespawnDiagonal()
+    {
+        isFalling = true; // Pausa el movimiento
+        yield return new WaitForSeconds(respawnTime); // Espera antes de reaparecer
+        transform.position = startPosition; // Reaparece en la posición inicial
+        isFalling = false; // Reactiva el movimiento
+    }
+
+    // Movimiento para objetos horizontales/verticales
+    void MoveLinear()
+    {
+        float currentPosition = (direction == MovementDirection.Horizontal) ? transform.position.x : transform.position.y;
         float start = (direction == MovementDirection.Horizontal) ? startPosition.x : startPosition.y;
 
-        // Calcular el cambio en la posición
         float delta = speed * Time.deltaTime * directionMultiplier;
+        float newPosition = currentPosition + delta;
 
-        // Mover el objeto hacia la posición objetivo
-        float newPosition = current + delta;
-
-        // Verificar si ha alcanzado o superado la posición objetivo
-        if (directionMultiplier > 0 && newPosition >= targetPosition)
+        if (directionMultiplier > 0 && newPosition >= targetPositionValue)
         {
-            newPosition = targetPosition; // Asegurarse de que no sobrepase la posición objetivo
-            StartCoroutine(PauseMovement()); // Iniciar la pausa
-            directionMultiplier = -1; // Cambiar la dirección
-            SetTargetPosition(); // Actualizar la nueva posición objetivo
+            newPosition = targetPositionValue;
+            StartCoroutine(PauseLinearMovement());
+            directionMultiplier = -1;
+            SetLinearTargetPosition();
         }
         else if (directionMultiplier < 0 && newPosition <= start)
         {
-            newPosition = start; // Asegurarse de que no sobrepase la posición de inicio
-            StartCoroutine(PauseMovement()); // Iniciar la pausa
-            directionMultiplier = 1; // Cambiar la dirección
-            SetTargetPosition(); // Actualizar la nueva posición objetivo
+            newPosition = start;
+            StartCoroutine(PauseLinearMovement());
+            directionMultiplier = 1;
+            SetLinearTargetPosition();
         }
 
-        // Aplicar la nueva posición dependiendo de la dirección
         if (direction == MovementDirection.Horizontal)
         {
             transform.position = new Vector2(newPosition, transform.position.y);
@@ -71,24 +140,22 @@ public class ObstacleMovement2D : MonoBehaviour
         }
     }
 
-    // Establecer la posición objetivo dependiendo de la dirección actual
-    void SetTargetPosition()
+    void SetLinearTargetPosition()
     {
         if (direction == MovementDirection.Horizontal)
         {
-            targetPosition = startPosition.x + (range * directionMultiplier);
+            targetPositionValue = startPosition.x + (range * directionMultiplier);
         }
         else
         {
-            targetPosition = startPosition.y + (range * directionMultiplier);
+            targetPositionValue = startPosition.y + (range * directionMultiplier);
         }
     }
 
-    // Corrutina para pausar el movimiento durante un tiempo
-    IEnumerator PauseMovement()
+    IEnumerator PauseLinearMovement()
     {
-        isPaused = true; // Indicar que el objeto está en pausa
-        yield return new WaitForSeconds(pauseDuration); // Esperar el tiempo de pausa
-        isPaused = false; // Reanudar el movimiento
+        isPaused = true;
+        yield return new WaitForSeconds(1f); // Pausa fija para movimiento horizontal/vertical
+        isPaused = false;
     }
 }

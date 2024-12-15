@@ -20,4 +20,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Escenas/Nivel3.unity
     guid: c2eccb18dfd88b143b3b8414feebbe06
+  - enabled: 1
+    path: Assets/Escenas/Historia1.unity
+    guid: d9835a2c22836bd46aee15feb138aceb
+  - enabled: 1
+    path: Assets/Escenas/Nivel4.unity
+    guid: d86fb8a0803fc5149a53c81254876512
   m_configObjects: {}
