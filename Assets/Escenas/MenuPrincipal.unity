@@ -1180,6 +1180,7 @@ GameObject:
   - component: {fileID: 886158443}
   - component: {fileID: 886158442}
   - component: {fileID: 886158441}
+  - component: {fileID: 886158444}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1261,6 +1262,15 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!45 &886158444
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 886158440}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 2100000, guid: 13f6e5eed33d84c76979f1ec06b5e48c, type: 2}
 --- !u!1 &1001585540
 GameObject:
   m_ObjectHideFlags: 0
@@ -2027,13 +2037,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1696420655}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0.7, y: 3, z: 0.4}
+  m_LocalRotation: {x: 0.9658933, y: -0.002123121, z: 0.2588103, w: 0.007923597}
+  m_LocalPosition: {x: -0.25, y: 4.6, z: 2.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 179.06, y: -30, z: 0}
 --- !u!1 &1850819774
 GameObject:
   m_ObjectHideFlags: 0
